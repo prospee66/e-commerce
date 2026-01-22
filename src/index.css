@@ -19,6 +19,31 @@
 body {
   margin: 0;
   background-color: #f9fafb;
+  /* Smooth scrolling on all devices */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent text size adjustment on mobile */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Improve tap targets for mobile */
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: rgba(37, 99, 235, 0.1);
+  touch-action: manipulation;
+}
+
+/* Smooth scrolling for modern browsers */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimize images for mobile */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 code {
