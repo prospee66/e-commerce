@@ -18,6 +18,16 @@ import AdminProducts from './pages/admin/AdminProducts'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminRequests from './pages/admin/AdminRequests'
 import AdminUsers from './pages/admin/AdminUsers'
+import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
+import HelpPage from './pages/HelpPage'
+import TrackOrderPage from './pages/TrackOrderPage'
+import ReturnsPage from './pages/ReturnsPage'
+import ShippingPage from './pages/ShippingPage'
+import FAQPage from './pages/FAQPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
+import CookiesPage from './pages/CookiesPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PrivateRoute from './components/auth/PrivateRoute'
 import AdminRoute from './components/auth/AdminRoute'
@@ -64,6 +74,18 @@ function App() {
 
         {/* Custom requests - Public route (anyone can submit) */}
         <Route path="custom-requests" element={<CustomRequestsPage />} />
+
+        {/* Info pages - Public routes */}
+        <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactPage />} />
+        <Route path="help" element={<HelpPage />} />
+        <Route path="track-order" element={<TrackOrderPage />} />
+        <Route path="returns" element={<ReturnsPage />} />
+        <Route path="shipping" element={<ShippingPage />} />
+        <Route path="faq" element={<FAQPage />} />
+        <Route path="privacy" element={<PrivacyPage />} />
+        <Route path="terms" element={<TermsPage />} />
+        <Route path="cookies" element={<CookiesPage />} />
 
         {/* Admin routes */}
         <Route path="admin" element={

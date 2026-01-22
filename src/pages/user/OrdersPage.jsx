@@ -38,7 +38,7 @@ const OrdersPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-primary-600 mb-2">${order.total}</p>
+                  <p className="text-xl font-bold text-primary-600 mb-2">₵{order.total}</p>
                   <Badge variant={getStatusVariant(order.status)}>
                     {order.status.toUpperCase()}
                   </Badge>

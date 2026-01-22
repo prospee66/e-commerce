@@ -37,7 +37,7 @@ const AdminOrders = () => {
                     <td className="py-3 px-4 font-medium">{order.id}</td>
                     <td className="py-3 px-4">{order.customer}</td>
                     <td className="py-3 px-4">{order.date}</td>
-                    <td className="py-3 px-4">${order.total}</td>
+                    <td className="py-3 px-4">₵{order.total}</td>
                     <td className="py-3 px-4">
                       <Badge variant={getStatusVariant(order.status)}>
                         {order.status.toUpperCase()}

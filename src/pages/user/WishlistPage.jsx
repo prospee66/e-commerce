@@ -42,7 +42,7 @@ const WishlistPage = () => {
               </Link>
               <div className="p-4">
                 <h3 className="font-semibold mb-2">{item.name}</h3>
-                <p className="text-xl font-bold text-primary-600 mb-4">${item.price}</p>
+                <p className="text-xl font-bold text-primary-600 mb-4">₵{item.price}</p>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={() => handleAddToCart(item)} className="flex-1">
                     <ShoppingCart size={16} className="mr-1" />

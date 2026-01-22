@@ -64,8 +64,8 @@ const features = [
   },
   {
     icon: ShoppingBag,
-    title: 'Easy Returns',
-    description: '30-day return policy',
+    title: '2-Days Return',
+    description: '2-day return policy',
   },
 ]
 
@@ -165,7 +165,7 @@ const HomePage = () => {
                     <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                     <div className="flex justify-between items-center">
                       <span className="text-2xl font-bold text-primary-600">
-                        ${product.price}
+                        ₵{product.price}
                       </span>
                       <div className="flex items-center">
                         <span className="text-yellow-500">★</span>

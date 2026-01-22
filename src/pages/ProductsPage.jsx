@@ -7,14 +7,61 @@ import Badge from '../components/ui/Badge'
 
 // Mock products data
 const mockProducts = [
-  { id: 1, name: 'Wireless Headphones', price: 299.99, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500', category: 'electronics', rating: 4.5, inStock: true },
-  { id: 2, name: 'Smart Watch', price: 399.99, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500', category: 'electronics', rating: 4.8, inStock: true },
+  // Electronics
+  { id: 1, name: 'Wireless Headphones Pro', price: 299.99, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500', category: 'electronics', rating: 4.5, inStock: true },
+  { id: 2, name: 'Smart Watch Ultra', price: 399.99, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500', category: 'electronics', rating: 4.8, inStock: true },
+  { id: 9, name: 'Laptop 15" 16GB RAM', price: 1299.99, image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500', category: 'electronics', rating: 4.7, inStock: true },
+  { id: 10, name: 'Wireless Mouse', price: 49.99, image: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=500', category: 'electronics', rating: 4.4, inStock: true },
+  { id: 11, name: 'Mechanical Keyboard', price: 149.99, image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500', category: 'electronics', rating: 4.6, inStock: true },
+  { id: 12, name: 'USB-C Hub 7-in-1', price: 69.99, image: 'https://images.unsplash.com/photo-1625948515291-69613efd103f?w=500', category: 'electronics', rating: 4.3, inStock: true },
+  { id: 13, name: 'Bluetooth Speaker', price: 89.99, image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500', category: 'electronics', rating: 4.5, inStock: true },
+  { id: 14, name: '4K Webcam', price: 179.99, image: 'https://images.unsplash.com/photo-1585241645927-c7a8e5840c42?w=500', category: 'electronics', rating: 4.7, inStock: false },
+  { id: 15, name: 'Portable Charger 20000mAh', price: 59.99, image: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500', category: 'electronics', rating: 4.6, inStock: true },
+  { id: 16, name: 'Tablet 10" 128GB', price: 449.99, image: 'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=500', category: 'electronics', rating: 4.5, inStock: true },
+  { id: 17, name: 'Wireless Earbuds', price: 129.99, image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500', category: 'electronics', rating: 4.8, inStock: true },
+  { id: 18, name: 'Gaming Headset RGB', price: 199.99, image: 'https://images.unsplash.com/photo-1599669454699-248893623440?w=500', category: 'electronics', rating: 4.6, inStock: true },
+
+  // Fashion
   { id: 3, name: 'Leather Backpack', price: 89.99, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500', category: 'fashion', rating: 4.3, inStock: true },
-  { id: 4, name: 'Running Shoes', price: 129.99, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500', category: 'sports', rating: 4.6, inStock: false },
-  { id: 5, name: 'Coffee Maker', price: 79.99, image: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=500', category: 'home', rating: 4.4, inStock: true },
-  { id: 6, name: 'Yoga Mat', price: 39.99, image: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500', category: 'sports', rating: 4.7, inStock: true },
-  { id: 7, name: 'Desk Lamp', price: 49.99, image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500', category: 'home', rating: 4.2, inStock: true },
-  { id: 8, name: 'Sunglasses', price: 159.99, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500', category: 'fashion', rating: 4.5, inStock: true },
+  { id: 8, name: 'Designer Sunglasses', price: 159.99, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500', category: 'fashion', rating: 4.5, inStock: true },
+  { id: 19, name: 'Casual T-Shirt', price: 29.99, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', category: 'fashion', rating: 4.2, inStock: true },
+  { id: 20, name: 'Denim Jeans', price: 79.99, image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500', category: 'fashion', rating: 4.4, inStock: true },
+  { id: 21, name: 'Leather Jacket', price: 249.99, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', category: 'fashion', rating: 4.7, inStock: true },
+  { id: 22, name: 'Canvas Sneakers', price: 69.99, image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500', category: 'fashion', rating: 4.3, inStock: true },
+  { id: 23, name: 'Wool Scarf', price: 39.99, image: 'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=500', category: 'fashion', rating: 4.5, inStock: true },
+  { id: 24, name: 'Leather Belt', price: 49.99, image: 'https://images.unsplash.com/photo-1556306535-38febf6782e7?w=500', category: 'fashion', rating: 4.4, inStock: true },
+  { id: 25, name: 'Canvas Tote Bag', price: 44.99, image: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=500', category: 'fashion', rating: 4.2, inStock: true },
+  { id: 26, name: 'Winter Coat', price: 189.99, image: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500', category: 'fashion', rating: 4.6, inStock: false },
+  { id: 27, name: 'Crossbody Bag', price: 64.99, image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500', category: 'fashion', rating: 4.5, inStock: true },
+  { id: 28, name: 'Baseball Cap', price: 24.99, image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500', category: 'fashion', rating: 4.3, inStock: true },
+
+  // Home & Garden
+  { id: 5, name: 'Coffee Maker Deluxe', price: 79.99, image: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=500', category: 'home', rating: 4.4, inStock: true },
+  { id: 7, name: 'Modern Desk Lamp', price: 49.99, image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500', category: 'home', rating: 4.2, inStock: true },
+  { id: 29, name: 'Air Purifier HEPA', price: 199.99, image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500', category: 'home', rating: 4.6, inStock: true },
+  { id: 30, name: 'Blender 1000W', price: 89.99, image: 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=500', category: 'home', rating: 4.5, inStock: true },
+  { id: 31, name: 'Ceramic Plant Pot Set', price: 34.99, image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=500', category: 'home', rating: 4.4, inStock: true },
+  { id: 32, name: 'Kitchen Knife Set', price: 129.99, image: 'https://images.unsplash.com/photo-1593618998160-e34014e67546?w=500', category: 'home', rating: 4.7, inStock: true },
+  { id: 33, name: 'Wall Clock Modern', price: 44.99, image: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=500', category: 'home', rating: 4.3, inStock: true },
+  { id: 34, name: 'Throw Pillow Set (4)', price: 54.99, image: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=500', category: 'home', rating: 4.5, inStock: true },
+  { id: 35, name: 'Area Rug 5x7', price: 149.99, image: 'https://images.unsplash.com/photo-1600166898405-da9535204843?w=500', category: 'home', rating: 4.4, inStock: true },
+  { id: 36, name: 'Garden Tool Set', price: 69.99, image: 'https://images.unsplash.com/photo-1617576683096-00fc8eecb3af?w=500', category: 'home', rating: 4.6, inStock: true },
+  { id: 37, name: 'Vacuum Cleaner Robot', price: 349.99, image: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=500', category: 'home', rating: 4.7, inStock: false },
+  { id: 38, name: 'Standing Fan 16"', price: 79.99, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', category: 'home', rating: 4.2, inStock: true },
+
+  // Sports
+  { id: 4, name: 'Running Shoes Pro', price: 129.99, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500', category: 'sports', rating: 4.6, inStock: true },
+  { id: 6, name: 'Premium Yoga Mat', price: 39.99, image: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500', category: 'sports', rating: 4.7, inStock: true },
+  { id: 39, name: 'Dumbbell Set 20kg', price: 89.99, image: 'https://images.unsplash.com/photo-1638536532686-d610adfc8e5c?w=500', category: 'sports', rating: 4.5, inStock: true },
+  { id: 40, name: 'Resistance Bands Set', price: 29.99, image: 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=500', category: 'sports', rating: 4.4, inStock: true },
+  { id: 41, name: 'Basketball Official Size', price: 49.99, image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500', category: 'sports', rating: 4.6, inStock: true },
+  { id: 42, name: 'Cycling Helmet', price: 79.99, image: 'https://images.unsplash.com/photo-1557825835-70d97c4aa2b6?w=500', category: 'sports', rating: 4.5, inStock: true },
+  { id: 43, name: 'Gym Bag Duffel', price: 54.99, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500', category: 'sports', rating: 4.3, inStock: true },
+  { id: 44, name: 'Water Bottle 1L', price: 19.99, image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500', category: 'sports', rating: 4.7, inStock: true },
+  { id: 45, name: 'Jump Rope Speed', price: 14.99, image: 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=500', category: 'sports', rating: 4.4, inStock: true },
+  { id: 46, name: 'Tennis Racket Pro', price: 149.99, image: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=500', category: 'sports', rating: 4.6, inStock: true },
+  { id: 47, name: 'Soccer Ball FIFA', price: 39.99, image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=500', category: 'sports', rating: 4.5, inStock: true },
+  { id: 48, name: 'Fitness Tracker Watch', price: 99.99, image: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500', category: 'sports', rating: 4.8, inStock: true },
 ]
 
 const ProductsPage = () => {
@@ -233,7 +280,7 @@ const ProductsPage = () => {
                         <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                         <div className="flex justify-between items-center">
                           <span className="text-2xl font-bold text-primary-600">
-                            ${product.price}
+                            ₵{product.price}
                           </span>
                           <div className="flex items-center">
                             <span className="text-yellow-500">★</span>
