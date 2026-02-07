@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import useAuthStore from './store/authStore'
 import Layout from './components/layout/Layout'
 import HomePage from './pages/HomePage'
 import ProductsPage from './pages/ProductsPage'
@@ -31,9 +33,19 @@ import CookiesPage from './pages/CookiesPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PrivateRoute from './components/auth/PrivateRoute'
 import AdminRoute from './components/auth/AdminRoute'
+import AdminLayout from './components/layout/AdminLayout'
+import ScrollToTop from './components/layout/ScrollToTop'
 
 function App() {
+  const initialize = useAuthStore((state) => state.initialize)
+
+  useEffect(() => {
+    initialize()
+  }, [])
+
   return (
+    <>
+    <ScrollToTop />
     <Routes>
       <Route path="/" element={<Layout />}>
         {/* Public routes */}
@@ -87,37 +99,20 @@ function App() {
         <Route path="terms" element={<TermsPage />} />
         <Route path="cookies" element={<CookiesPage />} />
 
-        {/* Admin routes */}
-        <Route path="admin" element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        } />
-        <Route path="admin/products" element={
-          <AdminRoute>
-            <AdminProducts />
-          </AdminRoute>
-        } />
-        <Route path="admin/orders" element={
-          <AdminRoute>
-            <AdminOrders />
-          </AdminRoute>
-        } />
-        <Route path="admin/requests" element={
-          <AdminRoute>
-            <AdminRequests />
-          </AdminRoute>
-        } />
-        <Route path="admin/users" element={
-          <AdminRoute>
-            <AdminUsers />
-          </AdminRoute>
-        } />
-
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
+
+      {/* Admin routes with dedicated layout */}
+      <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="orders" element={<AdminOrders />} />
+        <Route path="requests" element={<AdminRequests />} />
+        <Route path="users" element={<AdminUsers />} />
+      </Route>
     </Routes>
+    </>
   )
 }
 

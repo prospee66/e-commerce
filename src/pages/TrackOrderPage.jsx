@@ -3,32 +3,59 @@ import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { Package, Truck, CheckCircle, MapPin } from 'lucide-react'
+import api from '../lib/api'
 
 const TrackOrderPage = () => {
   const [trackingNumber, setTrackingNumber] = useState('')
   const [orderData, setOrderData] = useState(null)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleTrack = (e) => {
+  const statusSteps = ['pending', 'processing', 'shipped', 'delivered']
+
+  const buildTimeline = (order) => {
+    const stepLabels = {
+      pending: 'Order Placed',
+      processing: 'Processing',
+      shipped: 'Shipped',
+      delivered: 'Delivered',
+    }
+    const currentIndex = statusSteps.indexOf(order.status)
+    if (order.status === 'cancelled') {
+      return [
+        { status: 'Order Placed', date: new Date(order.createdAt).toLocaleString(), completed: true },
+        { status: 'Cancelled', date: new Date(order.updatedAt).toLocaleString(), completed: true },
+      ]
+    }
+    return statusSteps.map((step, i) => ({
+      status: stepLabels[step],
+      date: i <= currentIndex ? (i === 0 ? new Date(order.createdAt).toLocaleString() : new Date(order.updatedAt).toLocaleString()) : 'Pending',
+      completed: i <= currentIndex,
+    }))
+  }
+
+  const handleTrack = async (e) => {
     e.preventDefault()
-    // Mock order data - in production, fetch from backend
-    setOrderData({
-      orderNumber: trackingNumber,
-      status: 'in_transit',
-      estimatedDelivery: '2026-01-25',
-      timeline: [
-        { status: 'Order Placed', date: '2026-01-22 10:30 AM', completed: true },
-        { status: 'Payment Confirmed', date: '2026-01-22 10:31 AM', completed: true },
-        { status: 'Processing', date: '2026-01-22 2:00 PM', completed: true },
-        { status: 'Shipped', date: '2026-01-23 9:00 AM', completed: true },
-        { status: 'Out for Delivery', date: '2026-01-24 8:00 AM', completed: false },
-        { status: 'Delivered', date: 'Pending', completed: false },
-      ],
-      items: [
-        { name: 'Wireless Headphones', quantity: 1, price: 299.99 },
-        { name: 'Phone Case', quantity: 2, price: 29.99 },
-      ],
-      deliveryAddress: 'Accra, Greater Accra Region',
-    })
+    setError('')
+    setOrderData(null)
+    setLoading(true)
+    try {
+      const res = await api.get(`/orders/track/${trackingNumber}`)
+      const order = res.data.order
+      setOrderData({
+        orderNumber: order.orderNumber,
+        status: order.status,
+        timeline: buildTimeline(order),
+        items: order.items || [],
+        deliveryAddress: order.city || 'Ghana',
+        createdAt: order.createdAt,
+        total: order.total,
+      })
+    } catch (err) {
+      setError('Order not found. Please check your order number and try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -46,13 +73,20 @@ const TrackOrderPage = () => {
                 onChange={(e) => setTrackingNumber(e.target.value)}
                 required
               />
-              <Button type="submit">Track Order</Button>
+              <Button type="submit" disabled={loading}>{loading ? 'Tracking...' : 'Track Order'}</Button>
             </div>
             <p className="text-sm text-gray-600 mt-2">
               Your tracking number was sent to your email after order confirmation
             </p>
           </form>
         </Card>
+
+        {/* Error */}
+        {error && (
+          <Card className="mb-8 bg-red-50 border border-red-200">
+            <p className="text-red-700">{error}</p>
+          </Card>
+        )}
 
         {/* Order Status */}
         {orderData && (
@@ -70,13 +104,14 @@ const TrackOrderPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full font-semibold text-sm ${
+                    orderData.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                    orderData.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
                     <Truck size={16} className="mr-2" />
-                    In Transit
+                    {orderData.status?.charAt(0).toUpperCase() + orderData.status?.slice(1)}
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Est. Delivery: {orderData.estimatedDelivery}
-                  </p>
                 </div>
               </div>
 

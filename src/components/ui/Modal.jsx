@@ -25,7 +25,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
@@ -34,22 +34,23 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
 
       {/* Modal */}
       <div className={clsx(
-        'relative bg-white rounded-lg shadow-xl w-full mx-4',
+        'relative bg-white shadow-xl w-full mx-0 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] flex flex-col',
+        'rounded-t-2xl sm:rounded-lg',
         sizes[size]
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b flex-shrink-0">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 pr-2">{title}</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
           >
             <X size={24} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           {children}
         </div>
       </div>

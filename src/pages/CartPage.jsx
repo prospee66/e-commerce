@@ -39,52 +39,56 @@ const CartPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container-custom py-8">
-        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+      <div className="container-custom py-4 sm:py-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8">Shopping Cart</h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2">
             <Card>
               {items.map((item) => (
-                <div key={item.id} className="flex gap-4 py-4 border-b last:border-0">
+                <div key={item.id} className="flex gap-3 sm:gap-4 py-3 sm:py-4 border-b last:border-0">
                   <img
                     src={item.images?.[0] || item.image || 'https://via.placeholder.com/150'}
                     alt={item.name}
-                    className="w-24 h-24 object-cover rounded-lg"
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
                   />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">{item.name}</h3>
-                    <p className="text-gray-600 text-sm mb-2">{item.category}</p>
-                    <div className="flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-sm sm:text-lg mb-0.5 sm:mb-1 truncate">{item.name}</h3>
+                        <p className="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2">{item.category}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-base sm:text-xl font-bold text-primary-600">
+                          ₵{(item.price * item.quantity).toFixed(2)}
+                        </p>
+                        <p className="text-xs sm:text-sm text-gray-600">₵{item.price} each</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 sm:gap-4 mt-1">
                       <div className="flex items-center border border-gray-300 rounded-lg">
                         <button
                           onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          className="px-3 py-1 hover:bg-gray-100"
+                          className="px-2 sm:px-3 py-1 hover:bg-gray-100"
                         >
-                          <Minus size={16} />
+                          <Minus size={14} />
                         </button>
-                        <span className="px-4 py-1 border-x">{item.quantity}</span>
+                        <span className="px-3 sm:px-4 py-1 border-x text-sm">{item.quantity}</span>
                         <button
                           onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          className="px-3 py-1 hover:bg-gray-100"
+                          className="px-2 sm:px-3 py-1 hover:bg-gray-100"
                         >
-                          <Plus size={16} />
+                          <Plus size={14} />
                         </button>
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
                         className="text-red-600 hover:text-red-700"
                       >
-                        <Trash2 size={20} />
+                        <Trash2 size={18} />
                       </button>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold text-primary-600">
-                      ₵{(item.price * item.quantity).toFixed(2)}
-                    </p>
-                    <p className="text-sm text-gray-600">₵{item.price} each</p>
                   </div>
                 </div>
               ))}

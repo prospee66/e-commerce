@@ -1,116 +1,235 @@
+import { useState, useEffect } from 'react'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
-import { Plus, Edit, Trash2 } from 'lucide-react'
-
-const mockProducts = [
-  // Electronics
-  { id: 1, name: 'Wireless Headphones Pro', price: 299.99, category: 'Electronics', stock: 15, status: 'active' },
-  { id: 2, name: 'Smart Watch Ultra', price: 399.99, category: 'Electronics', stock: 8, status: 'active' },
-  { id: 9, name: 'Laptop 15" 16GB RAM', price: 1299.99, category: 'Electronics', stock: 10, status: 'active' },
-  { id: 10, name: 'Wireless Mouse', price: 49.99, category: 'Electronics', stock: 45, status: 'active' },
-  { id: 11, name: 'Mechanical Keyboard', price: 149.99, category: 'Electronics', stock: 28, status: 'active' },
-  { id: 12, name: 'USB-C Hub 7-in-1', price: 69.99, category: 'Electronics', stock: 40, status: 'active' },
-  { id: 13, name: 'Bluetooth Speaker', price: 89.99, category: 'Electronics', stock: 32, status: 'active' },
-  { id: 14, name: '4K Webcam', price: 179.99, category: 'Electronics', stock: 0, status: 'out_of_stock' },
-  { id: 15, name: 'Portable Charger 20000mAh', price: 59.99, category: 'Electronics', stock: 55, status: 'active' },
-  { id: 16, name: 'Tablet 10" 128GB', price: 449.99, category: 'Electronics', stock: 18, status: 'active' },
-  { id: 17, name: 'Wireless Earbuds', price: 129.99, category: 'Electronics', stock: 42, status: 'active' },
-  { id: 18, name: 'Gaming Headset RGB', price: 199.99, category: 'Electronics', stock: 25, status: 'active' },
-  // Fashion
-  { id: 3, name: 'Leather Backpack', price: 89.99, category: 'Fashion', stock: 20, status: 'active' },
-  { id: 8, name: 'Designer Sunglasses', price: 159.99, category: 'Fashion', stock: 22, status: 'active' },
-  { id: 19, name: 'Casual T-Shirt', price: 29.99, category: 'Fashion', stock: 150, status: 'active' },
-  { id: 20, name: 'Denim Jeans', price: 79.99, category: 'Fashion', stock: 80, status: 'active' },
-  { id: 21, name: 'Leather Jacket', price: 249.99, category: 'Fashion', stock: 15, status: 'active' },
-  { id: 22, name: 'Canvas Sneakers', price: 69.99, category: 'Fashion', stock: 95, status: 'active' },
-  { id: 23, name: 'Wool Scarf', price: 39.99, category: 'Fashion', stock: 60, status: 'active' },
-  { id: 24, name: 'Leather Belt', price: 49.99, category: 'Fashion', stock: 70, status: 'active' },
-  { id: 25, name: 'Canvas Tote Bag', price: 44.99, category: 'Fashion', stock: 100, status: 'active' },
-  { id: 26, name: 'Winter Coat', price: 189.99, category: 'Fashion', stock: 0, status: 'out_of_stock' },
-  { id: 27, name: 'Crossbody Bag', price: 64.99, category: 'Fashion', stock: 45, status: 'active' },
-  { id: 28, name: 'Baseball Cap', price: 24.99, category: 'Fashion', stock: 120, status: 'active' },
-  // Home & Garden
-  { id: 5, name: 'Coffee Maker Deluxe', price: 79.99, category: 'Home & Garden', stock: 12, status: 'active' },
-  { id: 7, name: 'Modern Desk Lamp', price: 49.99, category: 'Home & Garden', stock: 18, status: 'active' },
-  { id: 29, name: 'Air Purifier HEPA', price: 199.99, category: 'Home & Garden', stock: 22, status: 'active' },
-  { id: 30, name: 'Blender 1000W', price: 89.99, category: 'Home & Garden', stock: 38, status: 'active' },
-  { id: 31, name: 'Ceramic Plant Pot Set', price: 34.99, category: 'Home & Garden', stock: 75, status: 'active' },
-  { id: 32, name: 'Kitchen Knife Set', price: 129.99, category: 'Home & Garden', stock: 28, status: 'active' },
-  { id: 33, name: 'Wall Clock Modern', price: 44.99, category: 'Home & Garden', stock: 50, status: 'active' },
-  { id: 34, name: 'Throw Pillow Set (4)', price: 54.99, category: 'Home & Garden', stock: 65, status: 'active' },
-  { id: 35, name: 'Area Rug 5x7', price: 149.99, category: 'Home & Garden', stock: 20, status: 'active' },
-  { id: 36, name: 'Garden Tool Set', price: 69.99, category: 'Home & Garden', stock: 42, status: 'active' },
-  { id: 37, name: 'Vacuum Cleaner Robot', price: 349.99, category: 'Home & Garden', stock: 0, status: 'out_of_stock' },
-  { id: 38, name: 'Standing Fan 16"', price: 79.99, category: 'Home & Garden', stock: 35, status: 'active' },
-  // Sports
-  { id: 4, name: 'Running Shoes Pro', price: 129.99, category: 'Sports', stock: 25, status: 'active' },
-  { id: 6, name: 'Premium Yoga Mat', price: 39.99, category: 'Sports', stock: 35, status: 'active' },
-  { id: 39, name: 'Dumbbell Set 20kg', price: 89.99, category: 'Sports', stock: 30, status: 'active' },
-  { id: 40, name: 'Resistance Bands Set', price: 29.99, category: 'Sports', stock: 80, status: 'active' },
-  { id: 41, name: 'Basketball Official Size', price: 49.99, category: 'Sports', stock: 55, status: 'active' },
-  { id: 42, name: 'Cycling Helmet', price: 79.99, category: 'Sports', stock: 40, status: 'active' },
-  { id: 43, name: 'Gym Bag Duffel', price: 54.99, category: 'Sports', stock: 48, status: 'active' },
-  { id: 44, name: 'Water Bottle 1L', price: 19.99, category: 'Sports', stock: 100, status: 'active' },
-  { id: 45, name: 'Jump Rope Speed', price: 14.99, category: 'Sports', stock: 90, status: 'active' },
-  { id: 46, name: 'Tennis Racket Pro', price: 149.99, category: 'Sports', stock: 25, status: 'active' },
-  { id: 47, name: 'Soccer Ball FIFA', price: 39.99, category: 'Sports', stock: 70, status: 'active' },
-  { id: 48, name: 'Fitness Tracker Watch', price: 99.99, category: 'Sports', stock: 45, status: 'active' },
-]
+import Modal from '../../components/ui/Modal'
+import ProductFormModal from '../../components/admin/ProductFormModal'
+import api from '../../lib/api'
+import { Plus, Edit, Trash2, Loader } from 'lucide-react'
 
 const AdminProducts = () => {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState(null)
+  const [deleteConfirm, setDeleteConfirm] = useState(null)
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await api.get('/products')
+      setProducts(response.data.products)
+    } catch (err) {
+      console.error('Failed to fetch products:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleProductSuccess = (product, action) => {
+    if (action === 'created') {
+      setProducts(prev => [product, ...prev])
+    } else if (action === 'updated') {
+      setProducts(prev => prev.map(p => p._id === product._id ? product : p))
+    }
+  }
+
+  const handleDelete = async (productId) => {
+    try {
+      await api.delete(`/products/${productId}`)
+      setProducts(prev => prev.filter(p => p._id !== productId))
+      setDeleteConfirm(null)
+    } catch (err) {
+      alert('Failed to delete product')
+    }
+  }
+
+  const getCategoryLabel = (cat) => {
+    const map = { electronics: 'Electronics', fashion: 'Fashion', home: 'Home & Garden', sports: 'Sports' }
+    return map[cat] || cat
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader className="animate-spin text-primary-600" size={32} />
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container-custom">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Manage Products</h1>
-          <Button>
-            <Plus size={20} className="mr-2" />
-            Add Product
+    <>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold">Manage Products</h1>
+        <Button onClick={() => { setEditingProduct(null); setIsModalOpen(true) }}>
+          <Plus size={20} className="mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Add Product</span>
+          <span className="sm:hidden">Add</span>
+        </Button>
+      </div>
+
+      {/* Mobile Card Layout */}
+      <div className="md:hidden space-y-3">
+        {products.map((product) => (
+          <Card key={product._id}>
+            <div className="flex gap-3">
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold truncate">{product.name}</p>
+                    <p className="text-sm text-gray-500">{getCategoryLabel(product.category)}</p>
+                  </div>
+                  <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                    <button
+                      className="text-blue-600 hover:text-blue-700 p-1"
+                      onClick={() => { setEditingProduct(product); setIsModalOpen(true) }}
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      className="text-red-600 hover:text-red-700 p-1"
+                      onClick={() => setDeleteConfirm(product._id)}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="font-semibold text-sm">₵{product.price}</span>
+                  <span className="text-sm text-gray-500">Stock: {product.stock}</span>
+                  <Badge variant={product.stock > 0 ? 'success' : 'danger'}>
+                    {product.stock > 0 ? 'Active' : 'Out'}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
+        {products.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            No products found. Tap "Add" to create one.
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table Layout */}
+      <Card className="hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-3 px-4">Product</th>
+                <th className="text-left py-3 px-4">Category</th>
+                <th className="text-left py-3 px-4">Price</th>
+                <th className="text-left py-3 px-4">Stock</th>
+                <th className="text-left py-3 px-4">Status</th>
+                <th className="text-right py-3 px-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product._id} className="border-b last:border-0">
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-3">
+                      {product.image && (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-10 h-10 rounded object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        {product.description && (
+                          <p className="text-sm text-gray-500 truncate max-w-xs">
+                            {product.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">{getCategoryLabel(product.category)}</td>
+                  <td className="py-3 px-4">₵{product.price}</td>
+                  <td className="py-3 px-4">{product.stock}</td>
+                  <td className="py-3 px-4">
+                    <Badge variant={product.stock > 0 ? 'success' : 'danger'}>
+                      {product.stock > 0 ? 'Active' : 'Out of Stock'}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <button
+                      className="text-blue-600 hover:text-blue-700 mr-3"
+                      onClick={() => { setEditingProduct(product); setIsModalOpen(true) }}
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      className="text-red-600 hover:text-red-700"
+                      onClick={() => setDeleteConfirm(product._id)}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {products.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              No products found. Click "Add Product" to create one.
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* Product Form Modal */}
+      <ProductFormModal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setEditingProduct(null) }}
+        product={editingProduct}
+        onSuccess={handleProductSuccess}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        title="Delete Product"
+        size="sm"
+      >
+        <p className="text-gray-600 mb-6">
+          Are you sure you want to delete this product? This action cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setDeleteConfirm(null)}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => handleDelete(deleteConfirm)}
+            className="flex-1"
+          >
+            Delete
           </Button>
         </div>
-
-        <Card>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4">Product</th>
-                  <th className="text-left py-3 px-4">Category</th>
-                  <th className="text-left py-3 px-4">Price</th>
-                  <th className="text-left py-3 px-4">Stock</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-right py-3 px-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockProducts.map((product) => (
-                  <tr key={product.id} className="border-b last:border-0">
-                    <td className="py-3 px-4 font-medium">{product.name}</td>
-                    <td className="py-3 px-4">{product.category}</td>
-                    <td className="py-3 px-4">₵{product.price}</td>
-                    <td className="py-3 px-4">{product.stock}</td>
-                    <td className="py-3 px-4">
-                      <Badge variant={product.stock > 0 ? 'success' : 'danger'}>
-                        {product.stock > 0 ? 'Active' : 'Out of Stock'}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <button className="text-blue-600 hover:text-blue-700 mr-3">
-                        <Edit size={18} />
-                      </button>
-                      <button className="text-red-600 hover:text-red-700">
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      </div>
-    </div>
+      </Modal>
+    </>
   )
 }
 

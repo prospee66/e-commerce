@@ -4,13 +4,16 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import useAuthStore from '../../store/authStore'
+import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Card from '../../components/ui/Card'
 
 const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  firstName: z.string().min(2, 'First name is required'),
+  lastName: z.string().min(2, 'Last name is required'),
   email: z.string().email('Invalid email address'),
+  phone: z.string().min(10, 'Phone number is required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -37,22 +40,18 @@ const RegisterPage = () => {
     setError('')
 
     try {
-      // Simulate API call - Replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Mock successful registration
-      const mockUser = {
-        id: '1',
-        name: data.name,
+      const response = await api.post('/auth/register', {
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
-        role: 'customer',
-      }
-      const mockToken = 'mock-jwt-token-' + Date.now()
+        phone: data.phone,
+        password: data.password,
+      })
 
-      login(mockUser, mockToken)
+      login(response.data.user, response.data.token)
       navigate('/')
     } catch (err) {
-      setError('Registration failed. Please try again.')
+      setError(err.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -73,13 +72,23 @@ const RegisterPage = () => {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
-            label="Full Name"
-            type="text"
-            placeholder="John Doe"
-            error={errors.name?.message}
-            {...register('name')}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="First Name"
+              type="text"
+              placeholder="John"
+              error={errors.firstName?.message}
+              {...register('firstName')}
+            />
+
+            <Input
+              label="Last Name"
+              type="text"
+              placeholder="Doe"
+              error={errors.lastName?.message}
+              {...register('lastName')}
+            />
+          </div>
 
           <Input
             label="Email Address"
@@ -87,6 +96,14 @@ const RegisterPage = () => {
             placeholder="you@example.com"
             error={errors.email?.message}
             {...register('email')}
+          />
+
+          <Input
+            label="Phone Number"
+            type="tel"
+            placeholder="0241234567"
+            error={errors.phone?.message}
+            {...register('phone')}
           />
 
           <Input

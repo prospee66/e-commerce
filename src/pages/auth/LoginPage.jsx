@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import useAuthStore from '../../store/authStore'
+import api from '../../lib/api'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Card from '../../components/ui/Card'
@@ -32,22 +33,20 @@ const LoginPage = () => {
     setError('')
 
     try {
-      // Simulate API call - Replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Mock successful login
-      const mockUser = {
-        id: '1',
-        name: 'John Doe',
+      const response = await api.post('/auth/login', {
         email: data.email,
-        role: data.email.includes('admin') ? 'admin' : 'customer',
-      }
-      const mockToken = 'mock-jwt-token-' + Date.now()
+        password: data.password,
+      })
 
-      login(mockUser, mockToken)
-      navigate('/')
+      login(response.data.user, response.data.token)
+
+      if (response.data.user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
     } catch (err) {
-      setError('Invalid email or password')
+      setError(err.response?.data?.message || 'Invalid email or password')
     } finally {
       setIsLoading(false)
     }

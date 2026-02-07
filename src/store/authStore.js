@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import api from '../lib/api'
 
 const useAuthStore = create(
   persist(
@@ -7,6 +8,9 @@ const useAuthStore = create(
       user: null,
       token: null,
       isAuthenticated: false,
+      _hasHydrated: false,
+
+      setHasHydrated: (value) => set({ _hasHydrated: value }),
 
       login: (userData, token) => {
         set({
@@ -35,6 +39,22 @@ const useAuthStore = create(
         const { user } = get()
         return user?.role === 'admin'
       },
+
+      initialize: async () => {
+        const { token } = get()
+        if (!token) return
+
+        try {
+          const response = await api.get('/auth/me')
+          set({
+            user: response.data.user,
+            isAuthenticated: true,
+          })
+        } catch {
+          // Token expired or invalid
+          get().logout()
+        }
+      },
     }),
     {
       name: 'auth-storage',
@@ -43,6 +63,9 @@ const useAuthStore = create(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      },
     }
   )
 )

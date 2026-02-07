@@ -6,6 +6,7 @@ import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import Input from '../components/ui/Input'
 import useCartStore from '../store/cartStore'
+import api from '../lib/api'
 
 const CheckoutPage = () => {
   const navigate = useNavigate()
@@ -51,11 +52,36 @@ const CheckoutPage = () => {
   const initializePayment = usePaystackPayment(paystackConfig)
 
   // Handle payment success
-  const onPaymentSuccess = (reference) => {
-    console.log('Payment successful!', reference)
-    alert('Payment successful! Order ID: ' + reference.reference)
-    clearCart()
-    navigate('/orders')
+  const onPaymentSuccess = async (reference) => {
+    try {
+      const orderPayload = {
+        items: items.map(item => ({
+          productId: item._id || item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image || '',
+        })),
+        shippingAddress: {
+          name: customerData?.name || '',
+          email: customerData?.email || '',
+          phone: customerData?.phone || '',
+          address: customerData?.address || '',
+          city: customerData?.city || '',
+          postalCode: customerData?.postalCode || '',
+        },
+        paymentMethod,
+        paymentReference: reference.reference,
+        total: getTotal(),
+      }
+      await api.post('/orders', orderPayload)
+      clearCart()
+      navigate('/orders')
+    } catch (err) {
+      console.error('Failed to save order:', err)
+      clearCart()
+      navigate('/orders')
+    }
   }
 
   // Handle payment close
@@ -83,21 +109,21 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <div className="container-custom max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8">Checkout</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Checkout</h1>
 
         {/* Progress Steps */}
-        <div className="flex mb-8">
-          {['Payment & Shipping', 'Payment Details', 'Review'].map((label, index) => (
+        <div className="flex mb-6 sm:mb-8">
+          {['Shipping', 'Payment', 'Review'].map((label, index) => (
             <div key={label} className="flex-1 flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                 step > index + 1 ? 'bg-green-500' : step === index + 1 ? 'bg-primary-600' : 'bg-gray-300'
-              } text-white font-semibold`}>
+              } text-white font-semibold text-sm sm:text-base`}>
                 {step > index + 1 ? '✓' : index + 1}
               </div>
-              <span className="ml-2 font-medium">{label}</span>
-              {index < 2 && <div className="flex-1 h-1 bg-gray-300 mx-4" />}
+              <span className="ml-1.5 sm:ml-2 font-medium text-xs sm:text-sm">{label}</span>
+              {index < 2 && <div className="flex-1 h-1 bg-gray-300 mx-2 sm:mx-4" />}
             </div>
           ))}
         </div>
