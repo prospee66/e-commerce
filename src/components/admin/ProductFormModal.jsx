@@ -228,6 +228,7 @@ const ProductFormModal = ({ isOpen, onClose, product, onSuccess }) => {
               }`}
               {...register('category')}
             >
+              <option value="">Select a category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat.slug}>{cat.name}</option>
               ))}
