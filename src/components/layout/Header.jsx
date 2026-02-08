@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom'
 import useAuthStore from '../../store/authStore'
 import useCartStore from '../../store/cartStore'
 import useWishlistStore from '../../store/wishlistStore'
+import api from '../../lib/api'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -44,14 +45,23 @@ const Header = () => {
     navigate('/')
   }
 
-  const categories = [
-    { label: 'All Products', path: '/products' },
-    { label: 'Electronics', path: '/products?category=electronics' },
-    { label: 'Fashion', path: '/products?category=fashion' },
-    { label: 'Home & Garden', path: '/products?category=home' },
-    { label: 'Sports', path: '/products?category=sports' },
-    { label: 'Custom Request', path: '/custom-requests' },
-  ]
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    api.get('/categories').then(res => {
+      const cats = res.data?.categories || []
+      setCategories([
+        { label: 'All Products', path: '/products' },
+        ...cats.map(c => ({ label: c.name, path: `/products?category=${c.slug}` })),
+        { label: 'Custom Request', path: '/custom-requests' },
+      ])
+    }).catch(() => {
+      setCategories([
+        { label: 'All Products', path: '/products' },
+        { label: 'Custom Request', path: '/custom-requests' },
+      ])
+    })
+  }, [])
 
   return (
     <>

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import api from '../../lib/api'
+import api, { getImageUrl } from '../../lib/api'
 import Modal from '../ui/Modal'
 import Input from '../ui/Input'
 import Button from '../ui/Button'
@@ -12,9 +12,7 @@ const productSchema = z.object({
   name: z.string().min(2, 'Name is required'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   price: z.coerce.number().positive('Price must be positive'),
-  category: z.enum(['electronics', 'fashion', 'home', 'sports'], {
-    errorMap: () => ({ message: 'Please select a category' }),
-  }),
+  category: z.string().min(1, 'Please select a category'),
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative'),
   brand: z.string().optional(),
   status: z.enum(['active', 'inactive']),
@@ -27,7 +25,15 @@ const ProductFormModal = ({ isOpen, onClose, product, onSuccess }) => {
   const [imageUrl, setImageUrl] = useState('')
   const [uploadedImages, setUploadedImages] = useState([])
   const [uploading, setUploading] = useState(false)
+  const [categories, setCategories] = useState([])
   const fileInputRef = useRef(null)
+
+  // Fetch categories
+  useEffect(() => {
+    api.get('/categories').then(res => {
+      setCategories(res.data?.categories || [])
+    }).catch(() => {})
+  }, [])
 
   const {
     register,
@@ -40,7 +46,7 @@ const ProductFormModal = ({ isOpen, onClose, product, onSuccess }) => {
       name: '',
       description: '',
       price: '',
-      category: 'electronics',
+      category: '',
       stock: 0,
       brand: '',
       status: 'active',
@@ -71,7 +77,7 @@ const ProductFormModal = ({ isOpen, onClose, product, onSuccess }) => {
         name: '',
         description: '',
         price: '',
-        category: 'electronics',
+        category: '',
         stock: 0,
         brand: '',
         status: 'active',
@@ -222,10 +228,9 @@ const ProductFormModal = ({ isOpen, onClose, product, onSuccess }) => {
               }`}
               {...register('category')}
             >
-              <option value="electronics">Electronics</option>
-              <option value="fashion">Fashion</option>
-              <option value="home">Home & Garden</option>
-              <option value="sports">Sports</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat.slug}>{cat.name}</option>
+              ))}
             </select>
             {errors.category && (
               <p className="mt-1 text-sm text-red-500">{errors.category.message}</p>
@@ -344,7 +349,7 @@ const ProductFormModal = ({ isOpen, onClose, product, onSuccess }) => {
               {uploadedImages.map((img, index) => (
                 <div key={index} className="relative group aspect-square">
                   <img
-                    src={img}
+                    src={getImageUrl(img)}
                     alt={`Product ${index + 1}`}
                     className="w-full h-full object-cover rounded-lg border border-gray-200"
                   />

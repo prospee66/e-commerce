@@ -1,5 +1,6 @@
 import Modal from '../ui/Modal'
 import Badge from '../ui/Badge'
+import { getImageUrl } from '../../lib/api'
 
 const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
   if (!order) return null
@@ -69,7 +70,7 @@ const OrderDetailModal = ({ isOpen, onClose, order, onStatusUpdate }) => {
             {order.items?.map((item, index) => (
               <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                 {item.image && (
-                  <img src={item.image} alt={item.name} className="w-12 h-12 rounded object-cover" />
+                  <img src={getImageUrl(item.image)} alt={item.name} className="w-12 h-12 rounded object-cover" />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{item.name}</p>

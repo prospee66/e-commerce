@@ -6,7 +6,7 @@ import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import useCartStore from '../store/cartStore'
 import useWishlistStore from '../store/wishlistStore'
-import api from '../lib/api'
+import api, { getImageUrl } from '../lib/api'
 
 const ProductDetailPage = () => {
   const { id } = useParams()
@@ -55,9 +55,9 @@ const ProductDetailPage = () => {
   }
 
   const productImages = product.images && product.images.length > 0
-    ? product.images
+    ? product.images.map(getImageUrl)
     : product.image
-      ? [product.image]
+      ? [getImageUrl(product.image)]
       : ['https://via.placeholder.com/800x600?text=No+Image']
 
   const handleAddToCart = () => {

@@ -4,7 +4,7 @@ import { Search, Filter, Grid, List, Loader, SlidersHorizontal } from 'lucide-re
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
-import api from '../lib/api'
+import api, { getImageUrl } from '../lib/api'
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -12,6 +12,7 @@ const ProductsPage = () => {
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState('grid')
+  const [categories, setCategories] = useState([])
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
     search: searchParams.get('search') || '',
@@ -21,6 +22,13 @@ const ProductsPage = () => {
   })
   const [sortBy, setSortBy] = useState('featured')
   const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Fetch categories
+  useEffect(() => {
+    api.get('/categories').then(res => {
+      setCategories(res.data?.categories || [])
+    }).catch(() => {})
+  }, [])
 
   // Update filters when URL parameters change
   useEffect(() => {
@@ -65,13 +73,8 @@ const ProductsPage = () => {
 
   // Get category name for display
   const getCategoryName = () => {
-    const categoryMap = {
-      electronics: 'Electronics',
-      fashion: 'Fashion',
-      home: 'Home & Garden',
-      sports: 'Sports',
-    }
-    return categoryMap[filters.category] || 'All Products'
+    const found = categories.find(c => c.slug === filters.category)
+    return found?.name || (filters.category ? filters.category : 'All Products')
   }
 
   return (
@@ -114,10 +117,9 @@ const ProductsPage = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="">All Categories</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="fashion">Fashion</option>
-                  <option value="home">Home & Garden</option>
-                  <option value="sports">Sports</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat.slug}>{cat.name}</option>
+                  ))}
                 </select>
               </div>
 
@@ -226,7 +228,7 @@ const ProductsPage = () => {
                       viewMode === 'list' ? 'flex flex-row' : ''
                     }`} padding={false}>
                       <img
-                        src={product.image}
+                        src={getImageUrl(product.image)}
                         alt={product.name}
                         className={viewMode === 'list' ? 'w-48 h-48 object-cover' : 'w-full h-64 object-cover'}
                       />

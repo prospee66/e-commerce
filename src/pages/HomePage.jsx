@@ -3,14 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShoppingBag, Truck, Shield, HeadphonesIcon } from 'lucide-react'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
-import api from '../lib/api'
-
-const categories = [
-  { name: 'Electronics', slug: 'electronics', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=300&fit=crop' },
-  { name: 'Fashion', slug: 'fashion', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=300&fit=crop' },
-  { name: 'Home & Garden', slug: 'home', image: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=300&h=300&fit=crop' },
-  { name: 'Sports', slug: 'sports', image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=300&h=300&fit=crop' },
-]
+import api, { getImageUrl } from '../lib/api'
 
 const features = [
   {
@@ -37,17 +30,22 @@ const features = [
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([])
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
-    const fetchFeatured = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/products?limit=4&sort=rating')
-        setFeaturedProducts(response.data?.products || [])
+        const [productsRes, categoriesRes] = await Promise.all([
+          api.get('/products?limit=4&sort=rating'),
+          api.get('/categories'),
+        ])
+        setFeaturedProducts(productsRes.data?.products || [])
+        setCategories(categoriesRes.data?.categories || [])
       } catch (err) {
-        console.error('Failed to fetch featured products:', err)
+        console.error('Failed to fetch data:', err)
       }
     }
-    fetchFeatured()
+    fetchData()
   }, [])
 
   return (
@@ -108,7 +106,7 @@ const HomePage = () => {
               <Link key={category.slug} to={`/products?category=${category.slug}`}>
                 <Card className="overflow-hidden hover:shadow-xl transition-shadow cursor-pointer" padding={false}>
                   <img
-                    src={category.image}
+                    src={getImageUrl(category.image)}
                     alt={category.name}
                     className="w-full h-48 object-cover"
                   />
@@ -136,7 +134,7 @@ const HomePage = () => {
               <Link key={product._id} to={`/products/${product._id}`}>
                 <Card className="overflow-hidden hover:shadow-xl transition-shadow cursor-pointer" padding={false}>
                   <img
-                    src={product.image}
+                    src={getImageUrl(product.image)}
                     alt={product.name}
                     className="w-full h-64 object-cover"
                   />

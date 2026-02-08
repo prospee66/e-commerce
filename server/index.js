@@ -10,6 +10,7 @@ import userRoutes from './routes/users.js'
 import orderRoutes from './routes/orders.js'
 import uploadRoutes from './routes/upload.js'
 import requestRoutes from './routes/requests.js'
+import categoryRoutes from './routes/categories.js'
 import { seedDatabase } from './db/seed.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -60,6 +61,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/requests', requestRoutes)
+app.use('/api/categories', categoryRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

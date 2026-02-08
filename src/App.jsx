@@ -20,6 +20,7 @@ import AdminProducts from './pages/admin/AdminProducts'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminRequests from './pages/admin/AdminRequests'
 import AdminUsers from './pages/admin/AdminUsers'
+import AdminCategories from './pages/admin/AdminCategories'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import HelpPage from './pages/HelpPage'
@@ -107,6 +108,7 @@ function App() {
       <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
         <Route index element={<AdminDashboard />} />
         <Route path="products" element={<AdminProducts />} />
+        <Route path="categories" element={<AdminCategories />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="requests" element={<AdminRequests />} />
         <Route path="users" element={<AdminUsers />} />

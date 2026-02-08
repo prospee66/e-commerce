@@ -12,5 +12,6 @@ const users = Datastore.create({ filename: path.join(dataDir, 'users.db'), autol
 const products = Datastore.create({ filename: path.join(dataDir, 'products.db'), autoload: true })
 const orders = Datastore.create({ filename: path.join(dataDir, 'orders.db'), autoload: true })
 const requests = Datastore.create({ filename: path.join(dataDir, 'requests.db'), autoload: true })
+const categories = Datastore.create({ filename: path.join(dataDir, 'categories.db'), autoload: true })
 
-export { users, products, orders, requests }
+export { users, products, orders, requests, categories }

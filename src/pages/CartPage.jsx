@@ -3,6 +3,7 @@ import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import useCartStore from '../store/cartStore'
+import { getImageUrl } from '../lib/api'
 
 const CartPage = () => {
   const { items, removeItem, updateQuantity, getSubtotal, getTotal, discount } = useCartStore()
@@ -49,7 +50,7 @@ const CartPage = () => {
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3 sm:gap-4 py-3 sm:py-4 border-b last:border-0">
                   <img
-                    src={item.images?.[0] || item.image || 'https://via.placeholder.com/150'}
+                    src={getImageUrl(item.images?.[0] || item.image) || 'https://via.placeholder.com/150'}
                     alt={item.name}
                     className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0"
                   />

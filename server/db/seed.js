@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { users, products } from './index.js'
+import { users, products, categories } from './index.js'
 
 const seedProducts = [
   { id: 1, name: 'Wireless Headphones Pro', price: 299.99, description: 'Premium wireless headphones with active noise cancellation, 30-hour battery life, and superior sound quality. Perfect for music lovers and professionals.', category: 'electronics', brand: 'AudioTech', rating: 4.5, reviewCount: 128, stock: 15, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500', images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800', 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800', 'https://images.unsplash.com/photo-1545127398-14699f92334b?w=800'], specifications: { 'Battery Life': '30 hours', 'Bluetooth Version': '5.0', 'Weight': '250g', 'Warranty': '2 years' }, status: 'active' },
@@ -83,6 +83,18 @@ export async function seedDatabase() {
       }))
       await products.insert(productsToInsert)
       console.log(`${productsToInsert.length} products seeded`)
+    }
+    // Seed categories
+    const categoryCount = await categories.count({})
+    if (categoryCount === 0) {
+      const now = new Date()
+      await categories.insert([
+        { name: 'Electronics', slug: 'electronics', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=300&fit=crop', description: 'Gadgets, devices and tech accessories', order: 1, createdAt: now, updatedAt: now },
+        { name: 'Fashion', slug: 'fashion', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=300&fit=crop', description: 'Clothing, shoes and accessories', order: 2, createdAt: now, updatedAt: now },
+        { name: 'Home & Garden', slug: 'home', image: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=300&h=300&fit=crop', description: 'Furniture, decor and garden tools', order: 3, createdAt: now, updatedAt: now },
+        { name: 'Sports', slug: 'sports', image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=300&h=300&fit=crop', description: 'Equipment, apparel and fitness gear', order: 4, createdAt: now, updatedAt: now },
+      ])
+      console.log('4 categories seeded')
     }
   } catch (error) {
     console.error('Seed error:', error)

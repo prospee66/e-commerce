@@ -4,7 +4,7 @@ import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Modal from '../../components/ui/Modal'
 import ProductFormModal from '../../components/admin/ProductFormModal'
-import api from '../../lib/api'
+import api, { getImageUrl } from '../../lib/api'
 import { Plus, Edit, Trash2, Loader } from 'lucide-react'
 
 const AdminProducts = () => {
@@ -79,7 +79,7 @@ const AdminProducts = () => {
             <div className="flex gap-3">
               {product.image && (
                 <img
-                  src={product.image}
+                  src={getImageUrl(product.image)}
                   alt={product.name}
                   className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                 />
@@ -144,7 +144,7 @@ const AdminProducts = () => {
                     <div className="flex items-center gap-3">
                       {product.image && (
                         <img
-                          src={product.image}
+                          src={getImageUrl(product.image)}
                           alt={product.name}
                           className="w-10 h-10 rounded object-cover"
                         />

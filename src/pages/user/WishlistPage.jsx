@@ -4,6 +4,7 @@ import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import useWishlistStore from '../../store/wishlistStore'
 import useCartStore from '../../store/cartStore'
+import { getImageUrl } from '../../lib/api'
 
 const WishlistPage = () => {
   const { items, removeItem } = useWishlistStore()
@@ -38,7 +39,7 @@ const WishlistPage = () => {
           {items.map((item) => (
             <Card key={item.id} padding={false} className="overflow-hidden">
               <Link to={`/products/${item.id}`}>
-                <img src={item.image} alt={item.name} className="w-full h-48 object-cover" />
+                <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-48 object-cover" />
               </Link>
               <div className="p-4">
                 <h3 className="font-semibold mb-2">{item.name}</h3>
