@@ -24,7 +24,7 @@ const ProductDetailPage = () => {
       try {
         setLoading(true)
         const response = await api.get(`/products/${id}`)
-        setProduct(response.data.product)
+        setProduct(response.data?.product || null)
       } catch (err) {
         setProduct(null)
       } finally {

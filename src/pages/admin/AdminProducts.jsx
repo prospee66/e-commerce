@@ -22,7 +22,7 @@ const AdminProducts = () => {
     try {
       setLoading(true)
       const response = await api.get('/products')
-      setProducts(response.data.products)
+      setProducts(response.data?.products || [])
     } catch (err) {
       console.error('Failed to fetch products:', err)
     } finally {

@@ -26,7 +26,7 @@ const AdminRequests = () => {
       if (statusFilter) params.status = statusFilter
       if (searchQuery) params.search = searchQuery
       const res = await api.get('/requests', { params })
-      setRequests(res.data.requests)
+      setRequests(res.data?.requests || [])
     } catch (err) {
       console.error('Failed to fetch requests:', err)
     } finally {

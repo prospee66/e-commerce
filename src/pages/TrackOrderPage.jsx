@@ -41,7 +41,8 @@ const TrackOrderPage = () => {
     setLoading(true)
     try {
       const res = await api.get(`/orders/track/${trackingNumber}`)
-      const order = res.data.order
+      const order = res.data?.order
+      if (!order) throw new Error('Order not found')
       setOrderData({
         orderNumber: order.orderNumber,
         status: order.status,

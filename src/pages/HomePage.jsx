@@ -42,7 +42,7 @@ const HomePage = () => {
     const fetchFeatured = async () => {
       try {
         const response = await api.get('/products?limit=4&sort=rating')
-        setFeaturedProducts(response.data.products)
+        setFeaturedProducts(response.data?.products || [])
       } catch (err) {
         console.error('Failed to fetch featured products:', err)
       }

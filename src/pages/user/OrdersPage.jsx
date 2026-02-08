@@ -12,7 +12,7 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const res = await api.get('/orders/my')
-        setOrders(res.data.orders)
+        setOrders(res.data?.orders || [])
       } catch (err) {
         console.error('Failed to fetch orders:', err)
       } finally {

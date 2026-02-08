@@ -19,7 +19,7 @@ const AdminUsers = () => {
     try {
       setLoading(true)
       const res = await api.get('/users')
-      setUsers(res.data.users)
+      setUsers(res.data?.users || [])
     } catch (err) {
       console.error('Failed to fetch users:', err)
     } finally {

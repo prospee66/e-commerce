@@ -33,7 +33,7 @@ const AdminOrders = () => {
       if (statusFilter) params.status = statusFilter
       if (searchQuery) params.search = searchQuery
       const res = await api.get('/orders', { params })
-      setOrders(res.data.orders)
+      setOrders(res.data?.orders || [])
     } catch (err) {
       console.error('Failed to fetch orders:', err)
     } finally {

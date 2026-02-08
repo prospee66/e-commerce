@@ -48,8 +48,8 @@ const ProductsPage = () => {
         if (sortBy !== 'featured') params.set('sort', sortBy)
 
         const response = await api.get(`/products?${params.toString()}`)
-        setProducts(response.data.products)
-        setTotal(response.data.total)
+        setProducts(response.data?.products || [])
+        setTotal(response.data?.total || 0)
       } catch (err) {
         console.error('Failed to fetch products:', err)
       } finally {
