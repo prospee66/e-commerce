@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Package, ShoppingBag, Users, FileText, DollarSign } from 'lucide-react'
+import { Package, ShoppingBag, Users, FileText, DollarSign, FolderOpen } from 'lucide-react'
 import Card from '../../components/ui/Card'
 import Badge from '../../components/ui/Badge'
 import api from '../../lib/api'
@@ -47,6 +47,7 @@ const AdminDashboard = () => {
 
   const menuItems = [
     { icon: Package, label: 'Manage Products', path: '/admin/products', color: 'text-blue-600', bg: 'bg-blue-100' },
+    { icon: FolderOpen, label: 'Manage Categories', path: '/admin/categories', color: 'text-teal-600', bg: 'bg-teal-100' },
     { icon: ShoppingBag, label: 'Manage Orders', path: '/admin/orders', color: 'text-green-600', bg: 'bg-green-100' },
     { icon: FileText, label: 'Custom Requests', path: '/admin/requests', color: 'text-purple-600', bg: 'bg-purple-100' },
     { icon: Users, label: 'Manage Users', path: '/admin/users', color: 'text-orange-600', bg: 'bg-orange-100' },
@@ -79,7 +80,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {menuItems.map((item) => (
           <Link key={item.path} to={item.path}>
             <Card hover className="text-center cursor-pointer transition-transform hover:scale-105">
