@@ -1,8 +1,14 @@
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 
+// In development, Vite proxy forwards /api to localhost:5000
+// In production, use the Render backend URL
+const API_BASE_URL = import.meta.env.PROD
+  ? (import.meta.env.VITE_API_URL || 'https://life-goes-on-hub-api.onrender.com/api')
+  : '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -31,5 +37,20 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// Resolve image URLs - uploaded images (/uploads/...) need the backend base URL in production
+export function getImageUrl(url) {
+  if (!url) return ''
+  // Already an absolute URL (Unsplash, etc.)
+  if (url.startsWith('http')) return url
+  // Relative /uploads/ path - prefix with backend URL in production
+  if (url.startsWith('/uploads')) {
+    const backendBase = import.meta.env.PROD
+      ? (import.meta.env.VITE_API_URL || 'https://life-goes-on-hub-api.onrender.com').replace(/\/api$/, '')
+      : 'http://localhost:5000'
+    return `${backendBase}${url}`
+  }
+  return url
+}
 
 export default api

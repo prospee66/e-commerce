@@ -5,7 +5,10 @@ import { fileURLToPath } from 'url'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const uploadsDir = path.join(__dirname, '..', 'uploads')
+// Use Render persistent disk for uploads in production
+const uploadsDir = process.env.RENDER
+  ? '/opt/render/project/src/data/uploads'
+  : path.join(__dirname, '..', 'uploads')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

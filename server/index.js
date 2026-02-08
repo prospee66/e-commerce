@@ -13,7 +13,10 @@ import requestRoutes from './routes/requests.js'
 import { seedDatabase } from './db/seed.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const uploadsDir = path.join(__dirname, 'uploads')
+// Use Render persistent disk for uploads in production
+const uploadsDir = process.env.RENDER
+  ? '/opt/render/project/src/data/uploads'
+  : path.join(__dirname, 'uploads')
 
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync(uploadsDir)) {
@@ -24,7 +27,27 @@ const app = express()
 const PORT = process.env.PORT || 5000
 
 // Middleware
-app.use(cors())
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  process.env.FRONTEND_URL, // Set this in Render env vars
+].filter(Boolean)
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true)
+    if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+      return callback(null, true)
+    }
+    // Allow all .vercel.app subdomains
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true)
+    }
+    callback(null, false)
+  },
+  credentials: true,
+}))
 app.use(express.json())
 
 // Serve uploaded images as static files
