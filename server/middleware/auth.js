@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken'
-import { users } from '../db/index.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'lifegoesonhub-jwt-secret-change-in-production'
 

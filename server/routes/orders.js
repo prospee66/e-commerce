@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { orders, products } from '../db/index.js'
+import { Order, Product } from '../db/index.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
@@ -18,7 +18,7 @@ function generateOrderNumber() {
 // GET /api/orders/stats (admin) - must be before /:id
 router.get('/stats', authenticate, requireAdmin, async (req, res) => {
   try {
-    const allOrders = await orders.find({})
+    const allOrders = await Order.find({}).lean()
     const totalOrders = allOrders.length
     const totalRevenue = allOrders
       .filter(o => o.status !== 'cancelled')
@@ -45,8 +45,7 @@ router.get('/stats', authenticate, requireAdmin, async (req, res) => {
 // GET /api/orders/my (authenticated user's orders)
 router.get('/my', authenticate, async (req, res) => {
   try {
-    const userOrders = await orders.find({ userId: req.user._id })
-    userOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    const userOrders = await Order.find({ userId: req.user._id }).sort({ createdAt: -1 }).lean()
     res.json({ success: true, orders: userOrders })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch your orders' })
@@ -56,7 +55,7 @@ router.get('/my', authenticate, async (req, res) => {
 // GET /api/orders/track/:orderNumber (public)
 router.get('/track/:orderNumber', async (req, res) => {
   try {
-    const order = await orders.findOne({ orderNumber: req.params.orderNumber })
+    const order = await Order.findOne({ orderNumber: req.params.orderNumber }).lean()
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' })
     }
@@ -83,11 +82,10 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
   try {
     const { status, search, page = 1, limit = 20 } = req.query
 
-    let allOrders = await orders.find({})
+    let query = {}
+    if (status) query.status = status
 
-    if (status) {
-      allOrders = allOrders.filter(o => o.status === status)
-    }
+    let allOrders = await Order.find(query).sort({ createdAt: -1 }).lean()
 
     if (search) {
       const searchLower = search.toLowerCase()
@@ -97,8 +95,6 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
         (o.customerEmail || '').toLowerCase().includes(searchLower)
       )
     }
-
-    allOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
     const total = allOrders.length
     const pageNum = parseInt(page)
@@ -115,7 +111,7 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
 // GET /api/orders/:id
 router.get('/:id', authenticate, async (req, res) => {
   try {
-    const order = await orders.findOne({ _id: req.params.id })
+    const order = await Order.findById(req.params.id).lean()
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' })
     }
@@ -142,7 +138,7 @@ router.post('/', authenticate, async (req, res) => {
 
     const orderNumber = generateOrderNumber()
 
-    const newOrder = await orders.insert({
+    const newOrder = await Order.create({
       orderNumber,
       userId: req.user._id,
       customerName: shippingAddress.name || '',
@@ -154,15 +150,13 @@ router.post('/', authenticate, async (req, res) => {
       paymentStatus: 'paid',
       status: 'pending',
       total: parseFloat(total),
-      createdAt: new Date(),
-      updatedAt: new Date(),
     })
 
     // Decrement product stock
     for (const item of items) {
       const productId = item.productId || item._id
       if (productId) {
-        await products.update({ _id: productId }, { $inc: { stock: -item.quantity } })
+        await Product.updateOne({ _id: productId }, { $inc: { stock: -item.quantity } })
       }
     }
 
@@ -183,7 +177,7 @@ router.put('/:id/status', authenticate, requireAdmin, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Valid status is required' })
     }
 
-    const order = await orders.findOne({ _id: req.params.id })
+    const order = await Order.findById(req.params.id)
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found' })
     }
@@ -193,13 +187,12 @@ router.put('/:id/status', authenticate, requireAdmin, async (req, res) => {
       for (const item of order.items) {
         const productId = item.productId || item._id
         if (productId) {
-          await products.update({ _id: productId }, { $inc: { stock: item.quantity } })
+          await Product.updateOne({ _id: productId }, { $inc: { stock: item.quantity } })
         }
       }
     }
 
-    await orders.update({ _id: req.params.id }, { $set: { status, updatedAt: new Date() } })
-    const updated = await orders.findOne({ _id: req.params.id })
+    const updated = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true }).lean()
 
     res.json({ success: true, order: updated })
   } catch (error) {

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { products } from '../db/index.js'
+import { Product } from '../db/index.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
@@ -7,7 +7,7 @@ const router = Router()
 // GET /api/products/stats (admin) - must be before /:id
 router.get('/stats', authenticate, requireAdmin, async (req, res) => {
   try {
-    const allProducts = await products.find({})
+    const allProducts = await Product.find({}).lean()
     const total = allProducts.length
     const active = allProducts.filter(p => p.stock > 0).length
     const outOfStock = allProducts.filter(p => p.stock === 0).length
@@ -43,9 +43,9 @@ router.get('/', async (req, res) => {
       query.stock = { $gt: 0 }
     }
 
-    let results = await products.find(query)
+    let results = await Product.find(query).lean()
 
-    // Apply price filters in JS since NeDB doesn't support complex compound queries well
+    // Apply price filters
     if (minPrice) {
       results = results.filter(p => p.price >= parseFloat(minPrice))
     }
@@ -85,7 +85,7 @@ router.get('/', async (req, res) => {
 // GET /api/products/:id
 router.get('/:id', async (req, res) => {
   try {
-    const product = await products.findOne({ _id: req.params.id })
+    const product = await Product.findById(req.params.id).lean()
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' })
     }
@@ -104,7 +104,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Name, price, and category are required' })
     }
 
-    const newProduct = await products.insert({
+    const newProduct = await Product.create({
       name,
       description: description || '',
       price: parseFloat(price),
@@ -117,8 +117,6 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
       reviewCount: 0,
       specifications: {},
       status: status || 'active',
-      createdAt: new Date(),
-      updatedAt: new Date(),
     })
 
     res.status(201).json({ success: true, product: newProduct })
@@ -132,12 +130,12 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, description, price, category, stock, image, images, brand, status } = req.body
 
-    const existing = await products.findOne({ _id: req.params.id })
+    const existing = await Product.findById(req.params.id)
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Product not found' })
     }
 
-    const updates = { updatedAt: new Date() }
+    const updates = {}
     if (name !== undefined) updates.name = name
     if (description !== undefined) updates.description = description
     if (price !== undefined) updates.price = parseFloat(price)
@@ -148,8 +146,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     if (brand !== undefined) updates.brand = brand
     if (status !== undefined) updates.status = status
 
-    await products.update({ _id: req.params.id }, { $set: updates })
-    const updated = await products.findOne({ _id: req.params.id })
+    const updated = await Product.findByIdAndUpdate(req.params.id, updates, { new: true }).lean()
 
     res.json({ success: true, product: updated })
   } catch (error) {
@@ -160,12 +157,12 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
 // DELETE /api/products/:id (admin)
 router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
-    const existing = await products.findOne({ _id: req.params.id })
+    const existing = await Product.findById(req.params.id)
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Product not found' })
     }
 
-    await products.remove({ _id: req.params.id })
+    await Product.findByIdAndDelete(req.params.id)
     res.json({ success: true, message: 'Product deleted' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete product' })

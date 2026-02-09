@@ -4,6 +4,7 @@ import cors from 'cors'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import { connectDB } from './db/index.js'
 import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
 import userRoutes from './routes/users.js'
@@ -31,17 +32,15 @@ const PORT = process.env.PORT || 5000
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  process.env.FRONTEND_URL, // Set this in Render env vars
+  process.env.FRONTEND_URL,
 ].filter(Boolean)
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc)
     if (!origin) return callback(null, true)
     if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
       return callback(null, true)
     }
-    // Allow all .vercel.app subdomains
     if (origin.endsWith('.vercel.app')) {
       return callback(null, true)
     }
@@ -74,8 +73,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Internal server error' })
 })
 
-// Start server
+// Start server - connect to MongoDB first
 async function start() {
+  await connectDB()
   await seedDatabase()
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)

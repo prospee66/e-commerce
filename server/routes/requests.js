@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { requests, users } from '../db/index.js'
+import { Request, User } from '../db/index.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
@@ -7,11 +7,10 @@ const router = Router()
 // GET /api/requests/stats (admin)
 router.get('/stats', authenticate, requireAdmin, async (req, res) => {
   try {
-    const all = await requests.find({})
-    const total = all.length
-    const pending = all.filter(r => r.status === 'pending').length
-    const approved = all.filter(r => r.status === 'approved').length
-    const rejected = all.filter(r => r.status === 'rejected').length
+    const total = await Request.countDocuments({})
+    const pending = await Request.countDocuments({ status: 'pending' })
+    const approved = await Request.countDocuments({ status: 'approved' })
+    const rejected = await Request.countDocuments({ status: 'rejected' })
     res.json({ success: true, total, pending, approved, rejected })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to get stats' })
@@ -21,8 +20,7 @@ router.get('/stats', authenticate, requireAdmin, async (req, res) => {
 // GET /api/requests/my (user's own requests)
 router.get('/my', authenticate, async (req, res) => {
   try {
-    const userRequests = await requests.find({ userId: req.user._id })
-    userRequests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    const userRequests = await Request.find({ userId: req.user._id }).sort({ createdAt: -1 }).lean()
     res.json({ success: true, requests: userRequests })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch requests' })
@@ -35,7 +33,8 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
     const { status, search } = req.query
     let query = {}
     if (status) query.status = status
-    let results = await requests.find(query)
+
+    let results = await Request.find(query).sort({ createdAt: -1 }).lean()
 
     if (search) {
       const s = search.toLowerCase()
@@ -46,7 +45,6 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
       )
     }
 
-    results.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     res.json({ success: true, requests: results })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch requests' })
@@ -56,7 +54,7 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
 // GET /api/requests/:id (single request)
 router.get('/:id', authenticate, async (req, res) => {
   try {
-    const request = await requests.findOne({ _id: req.params.id })
+    const request = await Request.findById(req.params.id).lean()
     if (!request) {
       return res.status(404).json({ success: false, message: 'Request not found' })
     }
@@ -79,8 +77,8 @@ router.post('/', authenticate, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Title and description are required' })
     }
 
-    const user = await users.findOne({ _id: req.user._id })
-    const newRequest = await requests.insert({
+    const user = await User.findById(req.user._id)
+    const newRequest = await Request.create({
       userId: req.user._id,
       customerName: user?.name || 'Unknown',
       customerEmail: user?.email || '',
@@ -92,8 +90,6 @@ router.post('/', authenticate, async (req, res) => {
       deliveryDate: deliveryDate || '',
       status: 'pending',
       adminNote: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
     })
 
     res.status(201).json({ success: true, request: newRequest })
@@ -111,16 +107,15 @@ router.put('/:id/status', authenticate, requireAdmin, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid status' })
     }
 
-    const existing = await requests.findOne({ _id: req.params.id })
+    const existing = await Request.findById(req.params.id)
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Request not found' })
     }
 
-    const updates = { status, updatedAt: new Date() }
+    const updates = { status }
     if (adminNote !== undefined) updates.adminNote = adminNote
 
-    await requests.update({ _id: req.params.id }, { $set: updates })
-    const updated = await requests.findOne({ _id: req.params.id })
+    const updated = await Request.findByIdAndUpdate(req.params.id, updates, { new: true }).lean()
 
     res.json({ success: true, request: updated })
   } catch (error) {
@@ -131,11 +126,11 @@ router.put('/:id/status', authenticate, requireAdmin, async (req, res) => {
 // DELETE /api/requests/:id (admin)
 router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
-    const existing = await requests.findOne({ _id: req.params.id })
+    const existing = await Request.findById(req.params.id)
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Request not found' })
     }
-    await requests.remove({ _id: req.params.id })
+    await Request.findByIdAndDelete(req.params.id)
     res.json({ success: true, message: 'Request deleted' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete request' })

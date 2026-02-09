@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import bcrypt from 'bcryptjs'
-import { users } from '../db/index.js'
+import { User } from '../db/index.js'
 import { authenticate, generateToken } from '../middleware/auth.js'
 
 const router = Router()
@@ -18,14 +18,14 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' })
     }
 
-    const existingUser = await users.findOne({ email: email.toLowerCase() })
+    const existingUser = await User.findOne({ email: email.toLowerCase() })
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'Email already registered' })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const name = `${firstName} ${lastName}`
-    const newUser = await users.insert({
+    const newUser = await User.create({
       firstName,
       lastName,
       name,
@@ -34,7 +34,6 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       role: 'customer',
       status: 'active',
-      createdAt: new Date(),
     })
 
     const token = generateToken(newUser)
@@ -58,7 +57,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email and password are required' })
     }
 
-    const user = await users.findOne({ email: email.toLowerCase() })
+    const user = await User.findOne({ email: email.toLowerCase() })
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' })
     }
@@ -83,7 +82,7 @@ router.post('/login', async (req, res) => {
 // GET /api/auth/me
 router.get('/me', authenticate, async (req, res) => {
   try {
-    const user = await users.findOne({ _id: req.user._id })
+    const user = await User.findById(req.user._id)
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' })
     }
