@@ -1,9 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
-import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
 import { connectDB } from './db/index.js'
 import authRoutes from './routes/auth.js'
 import productRoutes from './routes/products.js'
@@ -13,17 +10,6 @@ import uploadRoutes from './routes/upload.js'
 import requestRoutes from './routes/requests.js'
 import categoryRoutes from './routes/categories.js'
 import { seedDatabase } from './db/seed.js'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-// Use Render persistent disk for uploads in production
-const uploadsDir = process.env.RENDER
-  ? '/opt/render/project/src/data/uploads'
-  : path.join(__dirname, 'uploads')
-
-// Create uploads directory if it doesn't exist
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true })
-}
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -49,9 +35,6 @@ app.use(cors({
   credentials: true,
 }))
 app.use(express.json())
-
-// Serve uploaded images as static files
-app.use('/uploads', express.static(uploadsDir))
 
 // Routes
 app.use('/api/auth', authRoutes)
