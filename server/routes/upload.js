@@ -4,10 +4,18 @@ import { v2 as cloudinary } from 'cloudinary'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 // Configure Cloudinary from env vars
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME
+const apiKey = process.env.CLOUDINARY_API_KEY
+const apiSecret = process.env.CLOUDINARY_API_SECRET
+
+if (!cloudName || !apiKey || !apiSecret) {
+  console.warn('WARNING: Cloudinary env vars missing. CLOUDINARY_CLOUD_NAME:', !!cloudName, 'CLOUDINARY_API_KEY:', !!apiKey, 'CLOUDINARY_API_SECRET:', !!apiSecret)
+}
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: cloudName,
+  api_key: apiKey,
+  api_secret: apiSecret,
 })
 
 // Use memory storage (buffer) instead of disk - we upload to Cloudinary
@@ -61,7 +69,7 @@ router.post('/', authenticate, requireAdmin, (req, res) => {
       res.json({ success: true, url })
     } catch (error) {
       console.error('Cloudinary upload error:', error)
-      res.status(500).json({ success: false, message: 'Failed to upload image' })
+      res.status(500).json({ success: false, message: error.message || 'Failed to upload image' })
     }
   })
 })
@@ -90,7 +98,7 @@ router.post('/multiple', authenticate, requireAdmin, (req, res) => {
       res.json({ success: true, urls })
     } catch (error) {
       console.error('Cloudinary upload error:', error)
-      res.status(500).json({ success: false, message: 'Failed to upload images' })
+      res.status(500).json({ success: false, message: error.message || 'Failed to upload images' })
     }
   })
 })
