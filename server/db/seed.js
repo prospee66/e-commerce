@@ -31,21 +31,22 @@ const seedProducts = [
 export async function seedDatabase() {
   try {
     // Seed admin user
-    const adminExists = await User.findOne({ role: 'admin' })
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('Admin@123', 10)
-      await User.create({
+    const hashedPassword = await bcrypt.hash('afraH@130199', 10)
+    const admin = await User.findOneAndUpdate(
+      { role: 'admin' },
+      {
         firstName: 'Admin',
         lastName: 'User',
         name: 'Admin User',
-        email: 'admin@lifegoesonhub.com',
+        email: 'possiblefrank@gmail.com',
         phone: '0200000000',
         password: hashedPassword,
         role: 'admin',
         status: 'active',
-      })
-      console.log('Admin user seeded: admin@lifegoesonhub.com / Admin@123')
-    }
+      },
+      { upsert: true, new: true }
+    )
+    console.log('Admin user ready:', admin.email)
 
     // Seed products
     const productCount = await Product.countDocuments({})
