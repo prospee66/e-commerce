@@ -30,20 +30,22 @@ const seedProducts = [
 
 export async function seedDatabase() {
   try {
-    // Seed admin user - remove old admin and create fresh
-    await User.deleteMany({ role: 'admin' })
-    const hashedPassword = await bcrypt.hash('afraH@130199', 10)
-    await User.create({
-      firstName: 'Admin',
-      lastName: 'User',
-      name: 'Admin User',
-      email: 'possiblefrank@gmail.com',
-      phone: '0200000000',
-      password: hashedPassword,
-      role: 'admin',
-      status: 'active',
-    })
-    console.log('Admin user ready: possiblefrank@gmail.com')
+    // Seed admin user only if no admin exists
+    const adminExists = await User.findOne({ role: 'admin' })
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash('afraH@130199', 10)
+      await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        name: 'Admin User',
+        email: 'possiblefrank@gmail.com',
+        phone: '0200000000',
+        password: hashedPassword,
+        role: 'admin',
+        status: 'active',
+      })
+      console.log('Admin user seeded: possiblefrank@gmail.com')
+    }
 
     // Seed products
     const productCount = await Product.countDocuments({})
