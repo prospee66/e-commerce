@@ -137,6 +137,7 @@ const HomePage = () => {
                     src={getImageUrl(product.image)}
                     alt={product.name}
                     className="w-full h-64 object-cover"
+                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x300?text=No+Image' }}
                   />
                   <div className="p-4">
                     <p className="text-sm text-gray-600 mb-1">{product.category}</p>

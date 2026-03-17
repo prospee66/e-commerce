@@ -231,6 +231,7 @@ const ProductsPage = () => {
                         src={getImageUrl(product.image)}
                         alt={product.name}
                         className={viewMode === 'list' ? 'w-48 h-48 object-cover' : 'w-full h-64 object-cover'}
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/400x300?text=No+Image' }}
                       />
                       <div className="p-4 flex-1">
                         <div className="flex items-start justify-between mb-2">
