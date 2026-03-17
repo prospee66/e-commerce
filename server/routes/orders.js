@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { Order, Product } from '../db/index.js'
-import { authenticate, requireAdmin } from '../middleware/auth.js'
+import { authenticate, requireAdmin, optionalAuth } from '../middleware/auth.js'
 
 const router = Router()
 
@@ -127,20 +127,34 @@ router.get('/:id', authenticate, async (req, res) => {
   }
 })
 
-// POST /api/orders (authenticated - create order after payment)
-router.post('/', authenticate, async (req, res) => {
+// POST /api/orders (guest or authenticated - create order after payment)
+router.post('/', optionalAuth, async (req, res) => {
   try {
-    const { items, shippingAddress, paymentMethod, paymentReference, total } = req.body
+    const { items, shippingAddress, paymentMethod, paymentReference } = req.body
 
-    if (!items || !items.length || !shippingAddress || !paymentMethod || !total) {
-      return res.status(400).json({ success: false, message: 'Items, shipping address, payment method, and total are required' })
+    if (!items || !items.length || !shippingAddress || !paymentMethod) {
+      return res.status(400).json({ success: false, message: 'Items, shipping address, and payment method are required' })
+    }
+
+    // Validate stock and recalculate total from DB prices (never trust client total)
+    let serverTotal = 0
+    for (const item of items) {
+      const productId = item.productId || item._id
+      if (!productId) return res.status(400).json({ success: false, message: 'Invalid item in order' })
+
+      const product = await Product.findById(productId)
+      if (!product) return res.status(400).json({ success: false, message: `Product not found: ${item.name || productId}` })
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ success: false, message: `Not enough stock for: ${product.name}` })
+      }
+      serverTotal += product.price * item.quantity
     }
 
     const orderNumber = generateOrderNumber()
 
     const newOrder = await Order.create({
       orderNumber,
-      userId: req.user._id,
+      userId: req.user?._id || null,
       customerName: shippingAddress.name || '',
       customerEmail: shippingAddress.email || req.user.email,
       items,
@@ -149,15 +163,13 @@ router.post('/', authenticate, async (req, res) => {
       paymentReference: paymentReference || '',
       paymentStatus: 'paid',
       status: 'pending',
-      total: parseFloat(total),
+      total: parseFloat(serverTotal.toFixed(2)),
     })
 
-    // Decrement product stock
+    // Decrement product stock after successful order creation
     for (const item of items) {
       const productId = item.productId || item._id
-      if (productId) {
-        await Product.updateOne({ _id: productId }, { $inc: { stock: -item.quantity } })
-      }
+      await Product.updateOne({ _id: productId }, { $inc: { stock: -item.quantity } })
     }
 
     res.status(201).json({ success: true, order: newOrder })

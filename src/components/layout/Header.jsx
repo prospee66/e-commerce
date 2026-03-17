@@ -135,11 +135,7 @@ const Header = () => {
                       <User size={22} />
                     </Link>
                   </>
-                ) : (
-                  <Link to="/login" className="text-gray-700 hover:text-primary-600">
-                    <User size={22} />
-                  </Link>
-                )}
+                ) : null}
 
                 <Link to="/cart" className="relative">
                   <ShoppingCart size={22} className="text-gray-700 hover:text-primary-600 transition-colors" />
@@ -211,9 +207,7 @@ const Header = () => {
                     <p className="text-xs text-primary-100">{user?.email}</p>
                   </div>
                 ) : (
-                  <button onClick={() => drawerNavigate('/login')} className="font-semibold text-white">
-                    Sign In / Register
-                  </button>
+                  <p className="font-semibold text-white">Life Goes On Hub</p>
                 )}
               </div>
               <button onClick={() => setDrawerOpen(false)} className="text-white hover:text-primary-200">

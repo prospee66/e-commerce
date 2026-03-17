@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'lifegoesonhub-jwt-secret-change-in-production'
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) throw new Error('JWT_SECRET environment variable is required.')
 
 export function authenticate(req, res, next) {
   const authHeader = req.headers.authorization
@@ -16,6 +17,21 @@ export function authenticate(req, res, next) {
   } catch {
     return res.status(401).json({ success: false, message: 'Invalid or expired token' })
   }
+}
+
+export function optionalAuth(req, res, next) {
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    req.user = null
+    return next()
+  }
+  const token = authHeader.split(' ')[1]
+  try {
+    req.user = jwt.verify(token, JWT_SECRET)
+  } catch {
+    req.user = null
+  }
+  next()
 }
 
 export function requireAdmin(req, res, next) {

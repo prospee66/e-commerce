@@ -30,21 +30,28 @@ const seedProducts = [
 
 export async function seedDatabase() {
   try {
-    // Seed admin user only if no admin exists
+    // Seed/update admin user using env vars
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@yourstore.com'
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@2024secure'
+    const hashedPassword = await bcrypt.hash(adminPassword, 10)
+
     const adminExists = await User.findOne({ role: 'admin' })
     if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('afraH@130199', 10)
       await User.create({
         firstName: 'Admin',
         lastName: 'User',
         name: 'Admin User',
-        email: 'possiblefrank@gmail.com',
+        email: adminEmail,
         phone: '0200000000',
         password: hashedPassword,
         role: 'admin',
         status: 'active',
       })
-      console.log('Admin user seeded: possiblefrank@gmail.com')
+      console.log(`Admin user created: ${adminEmail}`)
+    } else {
+      // Update credentials in case they changed in .env
+      await User.updateOne({ role: 'admin' }, { email: adminEmail, password: hashedPassword })
+      console.log(`Admin credentials updated: ${adminEmail}`)
     }
 
     // Seed products

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
@@ -6,7 +7,8 @@ import { Package, Truck, CheckCircle, MapPin } from 'lucide-react'
 import api from '../lib/api'
 
 const TrackOrderPage = () => {
-  const [trackingNumber, setTrackingNumber] = useState('')
+  const [searchParams] = useSearchParams()
+  const [trackingNumber, setTrackingNumber] = useState(searchParams.get('order') || '')
   const [orderData, setOrderData] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -34,13 +36,21 @@ const TrackOrderPage = () => {
     }))
   }
 
-  const handleTrack = async (e) => {
-    e.preventDefault()
+  // Auto-track if order number came from URL (redirected after checkout)
+  useEffect(() => {
+    const orderFromUrl = searchParams.get('order')
+    if (orderFromUrl) {
+      setTrackingNumber(orderFromUrl)
+      fetchOrder(orderFromUrl)
+    }
+  }, [])
+
+  const fetchOrder = async (number) => {
     setError('')
     setOrderData(null)
     setLoading(true)
     try {
-      const res = await api.get(`/orders/track/${trackingNumber}`)
+      const res = await api.get(`/orders/track/${number}`)
       const order = res.data?.order
       if (!order) throw new Error('Order not found')
       setOrderData({
@@ -52,11 +62,16 @@ const TrackOrderPage = () => {
         createdAt: order.createdAt,
         total: order.total,
       })
-    } catch (err) {
+    } catch {
       setError('Order not found. Please check your order number and try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleTrack = (e) => {
+    e.preventDefault()
+    fetchOrder(trackingNumber)
   }
 
   return (

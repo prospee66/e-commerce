@@ -74,13 +74,13 @@ const CheckoutPage = () => {
         paymentReference: reference.reference,
         total: getTotal(),
       }
-      await api.post('/orders', orderPayload)
+      const res = await api.post('/orders', orderPayload)
       clearCart()
-      navigate('/orders')
+      navigate(`/track-order?order=${res.data.order.orderNumber}`)
     } catch (err) {
       console.error('Failed to save order:', err)
       clearCart()
-      navigate('/orders')
+      navigate('/track-order')
     }
   }
 

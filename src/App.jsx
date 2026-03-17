@@ -58,12 +58,8 @@ function App() {
         <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
 
-        {/* Protected user routes */}
-        <Route path="checkout" element={
-          <PrivateRoute>
-            <CheckoutPage />
-          </PrivateRoute>
-        } />
+        {/* Checkout - public, no login required */}
+        <Route path="checkout" element={<CheckoutPage />} />
         <Route path="dashboard" element={
           <PrivateRoute>
             <UserDashboard />
